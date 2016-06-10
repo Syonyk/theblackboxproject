@@ -24,7 +24,10 @@ $blackbox= new Blackbox();
 $modules= $blackbox->modules;
 	
 foreach ($modules as $mod=>$module) {
+        // prevent output that can interfere with usage as a webservice
+	ob_start();
 	$module->read_direct();
+	ob_end_clean();
 	$profiler->add("Module $module->name read direct");
 }		
 

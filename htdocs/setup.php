@@ -954,7 +954,7 @@ if ($do=='editview2') {
 				insert into blackboxviews set
 				template= ':template',
 				viewname= ':viewname',
-				position= (select max(v.position)+1 from blackboxviews v)
+				position= (select coalesce(max(v.position),0)+1 from blackboxviews v)
 			";	
 			$params= array('template'=>$viewtemplate,'viewname'=>$viewname);
 			$db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);

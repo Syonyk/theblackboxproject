@@ -125,11 +125,10 @@ class Graph {
 
 		$this->check_data($data);
 		
-		//errors
+		//errors: Syonyk sez, let's /not/ kill the cronjob totally.
 		if ($this->errorlog)	{		
 			print "<h2>Graph config error</h2>";
 			print nl2br($this->errorlog);
-			exit;
 		}
 		
 		//draw graph

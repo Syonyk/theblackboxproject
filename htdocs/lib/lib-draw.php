@@ -33,6 +33,8 @@ class Draw {
 		$this->xsize= $xsize;
 		$this->ysize= $ysize;
 		
+                print "Creating image, $xsize x $ysize\n";
+                
 		$this->img = imagecreatetruecolor($xsize,$ysize);
 		
 		if ($istrans) {

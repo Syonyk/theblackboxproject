@@ -44,9 +44,9 @@ $blackbox->process_modules();
 ### Render graphs
 
 $query= "
-	select * from blackboxelements
-	where type='g'
-	order by panetag,position
+select * from blackboxelements
+where type='g'
+order by panetag,position
 ";
 $params= array('id_view'=>1);
 $result= $db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
@@ -199,6 +199,14 @@ function make_graph($id_element,$settings) {
 	$gfile= "$dir/tmp/current-graph-$id_element.png";
 	$graph->savetofile($gfile);
 	chmod($gfile,0664);
+        
+        // Make a big one.
+        $params['size'] = array(1920,1080);
+	$graph= new Graph($params,$data);
+	$gfile= "$dir/tmp/current-graph-large-$id_element.png";
+	$graph->savetofile($gfile);
+	chmod($gfile,0664);
+        
 
 	return true;
 }

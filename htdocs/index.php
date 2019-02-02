@@ -87,7 +87,7 @@ while ($row= $db->fetch_row($result)) {
 	
 	//graph
 	else {
-		$graph= "<img src='tmp/current-graph-$id_element.png' alt='' />";
+		$graph= "<a href='tmp/current-graph-large-$id_element.png'><img src='tmp/current-graph-$id_element.png' alt='' /></a>";
 
 		$page->tags["Pane::$panetag"].= "
 			<div class='viewgraph'>

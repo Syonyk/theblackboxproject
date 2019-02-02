@@ -231,7 +231,7 @@ class midnite_classic extends Module {
 		$defns['tcc2']= array(
 			'name'=>       "PCB Temp",
 			'type'=>       'sampled',
-			'store'=>      false, //ignored for now
+			'store'=>      true,
 			'interval'=>   'periodic',
 			'method'=>     'get_register',
 			'argument'=>   '[4134]/10',
@@ -307,7 +307,7 @@ class midnite_classic extends Module {
 			'store'=>      true,
 			'interval'=>   'periodic',
 			'method'=>     'get_register',
-			'argument'=>   'BITS([4371],15) ? (65536-[4371])/-10 : [4371]/10',
+			'argument'=>   'BITSET([4371],15) ? (65536-[4371])/-10 : [4371]/10',
 			'comment'=>    '(decimal) +/- battery current, 1dp',
 			'unit'=>       'A',
 			'priority'=>   2,
@@ -649,7 +649,7 @@ class midnite_classic extends Module {
 			'store'=>      true,
 			'interval'=>   'periodic',
 			'method'=>     'get_register',
-			'argument'=>   'BITS([4369],15) ? -(65536-[4369]) : [4369]',
+			'argument'=>   'BITSET([4369],15) ? -(65536-[4369]) : [4369]',
 			'comment'=>    '(decimal) 0dp',
 			'unit'=>       'Ah',
 			'priority'=>   2,
@@ -853,6 +853,9 @@ class midnite_classic extends Module {
 		//use eval to evaluate the bitwise logic, nasty
 		//some sort of expression parser is needed there
 		eval($expression);
+                
+                // Avoid repeating decimals that exceed space limits.
+                $decimal = round($decimal, 5);
 
 		return $decimal;
 	}
@@ -1121,13 +1124,19 @@ function msb($in) {
 	return ($in >> 8);
 }
 
+// I'm not sure what this function does, but it's broken as a bit test.
 function BITS($in,$start,$stop=-1) {
 	$bitmask=0;
 	if ($stop==-1) $stop=$start;
 	for ($i=$stop;$i<=$start;$i++) {
 		$bitmask+=pow(2,$i);
 	}
+        
 	return ($in & $bitmask >> pow(2,$stop));
+}
+
+function BITSET($value, $bit) {
+    return $value & (1 << $bit);
 }
 
 

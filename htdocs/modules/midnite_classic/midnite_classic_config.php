@@ -16,8 +16,6 @@
 $set['module_name']=         'Midnite Classic';
 $set['module_order']=        1;
 
-$set['sample_device']=       true;  //unused?
-$set['sample_during_hours']= '06-19'; //unused?
 $set['sample_interval']=     $GLOBALS['SETTINGS']['sample_interval'] * 60;
 
 $set['store_in_db']=         true;

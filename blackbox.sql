@@ -11,10 +11,10 @@
 
 create table blackboxviews (
 	id_view      int unsigned primary key auto_increment,
-	viewname     varchar(255) not null,
+	viewname     varchar(255),
 	template     varchar(255) not null,
-	type         char(1) not null,
-	settings     text not null,
+	type         char(1),
+	settings     text,
 	position     tinyint unsigned not null
 );
 INSERT INTO blackboxviews SET `id_view`='1', template= 'template-view1.html', `position`='1';
@@ -29,11 +29,11 @@ INSERT INTO blackboxviews SET `id_view`='2', template= 'template-view2.html', `p
 create table blackboxelements (
 	id_element   int unsigned primary key auto_increment,
 	id_view      tinyint unsigned not null,
-	name         varchar(255) not null,
-	type         char(1) not null,
-	panetag      varchar(255) not null,
-	settings     text not null,
-	position     tinyint unsigned not null
+	name         varchar(255),
+	type         char(1),
+	panetag      varchar(255),
+	settings     text,
+	position     tinyint unsigned
 );
 
 # these arent necessary but will get the default view running until the default self populates

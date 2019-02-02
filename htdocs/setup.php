@@ -68,10 +68,10 @@ if (!$db->num_rows($result)) {
 	$query= "
 		create table blackboxviews (
 			id_view      int unsigned primary key auto_increment,
-			viewname     varchar(255) not null,
+			viewname     varchar(255),
 			template     varchar(255) not null,
-			type         char(1) not null,
-			settings     text not null,
+			type         char(1),
+			settings     text,
 			position     tinyint unsigned not null
 		);
 	";
@@ -954,6 +954,7 @@ if ($do=='editview2') {
 				insert into blackboxviews set
 				template= ':template',
 				viewname= ':viewname',
+                                type= 'd',
 				position= (select coalesce(max(v.position),0)+1 from blackboxviews v)
 			";	
 			$params= array('template'=>$viewtemplate,'viewname'=>$viewname);

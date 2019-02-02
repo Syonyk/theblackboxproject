@@ -1,6 +1,6 @@
 <?php
 
-/** 
+/**
  *  SETUP.PHP
  *  =========
  *  User configuration of views.  Various form incarnations, edit, del, datapts and graphs
@@ -10,62 +10,59 @@
  *  @license:  GPLv3. 
  *  @revision: $Rev$
  *
- **/ 
-
-
+ * */
 ### Prep
 
 include('init.php');
 
 //default styles
-$styles=   array('small','medium','large');
+$styles = array('small', 'medium', 'large');
 
 //new page instance
-$form= new Form;
-$page= new Page('template-setup.html');
+$form = new Form;
+$page = new Page('template-setup.html');
 
 //get module/dp definitions
-$blackbox= new Blackbox();
-$modules= $blackbox->modules;
+$blackbox = new Blackbox();
+$modules = $blackbox->modules;
 
 //get incoming
-$do=         getpost('do');
-$id_view=    getpost('id_view');
-$id_element= getpost('id_element');
-$series=     getpost('series');
-$name=       getpost('name');
-$panetag=    getpost('panetag');
-$position=   getpost('position');
+$do = getpost('do');
+$id_view = getpost('id_view');
+$id_element = getpost('id_element');
+$series = getpost('series');
+$name = getpost('name');
+$panetag = getpost('panetag');
+$position = getpost('position');
 
-$datapt=     getpost('datapt');
-$resolution= getpost('resolution');
-$style=      getpost('style');
+$datapt = getpost('datapt');
+$resolution = getpost('resolution');
+$style = getpost('style');
 
-$width=      getpost('width');
-$height=     getpost('height');
-$ymax=       getpost('ymax');
-$ymin=       getpost('ymin');
-$average=    getpost('average');
-$linethick=  getpost('linethick');
-$linesmooth= getpost('linesmooth');
+$width = getpost('width');
+$height = getpost('height');
+$ymax = getpost('ymax');
+$ymin = getpost('ymin');
+$average = getpost('average');
+$linethick = getpost('linethick');
+$linesmooth = getpost('linesmooth');
 
-$linecolor=  getpost('linecolor');
-$multiplier= getpost('multiplier');
+$linecolor = getpost('linecolor');
+$multiplier = getpost('multiplier');
 
-$viewname=     getpost('viewname');
-$viewtemplate= getpost('viewtemplate');
+$viewname = getpost('viewname');
+$viewtemplate = getpost('viewtemplate');
 
 
 
 ###  TABLE MAINTENANCE
 ###
 ###############################################
-
 //check views table 
-$query= "show tables like 'blackboxviews'";		
-$result= $db->query($query) or codeerror('DB error',__FILE__,__LINE__);
+$query = "show tables like 'blackboxviews'";
+$result = $db->query($query) or codeerror('DB error', __FILE__, __LINE__);
 if (!$db->num_rows($result)) {
-	$query= "
+    $query = "
 		create table blackboxviews (
 			id_view      int unsigned primary key auto_increment,
 			viewname     varchar(255),
@@ -75,18 +72,18 @@ if (!$db->num_rows($result)) {
 			position     tinyint unsigned not null
 		);
 	";
-	if (!$db->query($query))  {
-		$page->tags['PageTitle'] =  'Error';
-		$page->tags['Body']=	 "Our attempt to add the views table failed. That means your database/permissions are not set right.";
-		$page->render();
-	}
+    if (!$db->query($query)) {
+        $page->tags['PageTitle'] = 'Error';
+        $page->tags['Body'] = "Our attempt to add the views table failed. That means your database/permissions are not set right.";
+        $page->render();
+    }
 }
 
 //check elements table  
-$query= "show tables like 'blackboxelements'";		
-$result= $db->query($query) or codeerror('DB error',__FILE__,__LINE__);
+$query = "show tables like 'blackboxelements'";
+$result = $db->query($query) or codeerror('DB error', __FILE__, __LINE__);
 if (!$db->num_rows($result)) {
-	$query= "
+    $query = "
 		create table blackboxelements (
 			id_element   int unsigned primary key auto_increment,
 			id_view      tinyint unsigned not null,
@@ -97,11 +94,11 @@ if (!$db->num_rows($result)) {
 			position     tinyint unsigned not null
 		);
 	";
-	if (!$db->query($query))  {
-		$page->tags['PageTitle'] =  'Error';
-		$page->tags['Body']=	 "Our attempt to add the elements table failed. That means your database/permissions are not set right.";
-		$page->render();
-	}
+    if (!$db->query($query)) {
+        $page->tags['PageTitle'] = 'Error';
+        $page->tags['Body'] = "Our attempt to add the elements table failed. That means your database/permissions are not set right.";
+        $page->render();
+    }
 }
 
 
@@ -109,74 +106,74 @@ if (!$db->num_rows($result)) {
 ###  COMMON
 ###
 ###############################################
-
-
 //check ids
 if (isgoodid($id_element)) {
-	$query= "select id_view from blackboxelements where id_element=':id_element' ";	
-	$params= array('id_element'=>$id_element);
-	$result= $db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-	$row= $db->fetch_row($result) or die('Invalid id'.__LINE__);
-	$id_view= (int)$row['id_view'];
-}
-else $id_element=0;
+    $query = "select id_view from blackboxelements where id_element=':id_element' ";
+    $params = array('id_element' => $id_element);
+    $result = $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+    $row = $db->fetch_row($result) or die('Invalid id' . __LINE__);
+    $id_view = (int) $row['id_view'];
+} else
+    $id_element = 0;
 
 if (isgoodid($id_view)) {
-	$query= "select template from blackboxviews where id_view=':id_view' ";	
-	$params= array('id_view'=>$id_view);
-	$result= $db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-	$row= $db->fetch_row($result) or die('Invalid id'.__LINE__);
-	$viewtemplate= $row['template'];
-}
-else $id_view=0;
+    $query = "select template from blackboxviews where id_view=':id_view' ";
+    $params = array('id_view' => $id_view);
+    $result = $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+    $row = $db->fetch_row($result) or die('Invalid id' . __LINE__);
+    $viewtemplate = $row['template'];
+} else
+    $id_view = 0;
 
 //get views
-$query= "select * from blackboxviews order by id_view ";	
-$result= $db->query($query) or codeerror('DB error',__FILE__,__LINE__);
-$views= array(); $vnav='';
-while ($row= $db->fetch_row($result)) {
-	$views[]= $row;
-	$vnav.="<a href='index.php?id_view={$row['id_view']}'>View {$row['id_view']}</a> ";
+$query = "select * from blackboxviews order by id_view ";
+$result = $db->query($query) or codeerror('DB error', __FILE__, __LINE__);
+$views = array();
+$vnav = '';
+while ($row = $db->fetch_row($result)) {
+    $views[] = $row;
+    $vnav .= "<a href='index.php?id_view={$row['id_view']}'>View {$row['id_view']}</a> ";
 }
 
 //set nav throughout
-$page->tags['Nav']= "$vnav <a href='setup.php'>Setup</a> <a href='history.php'>History</a>";	
+$page->tags['Nav'] = "$vnav <a href='setup.php'>Setup</a> <a href='history.php'>History</a>";
 
 //get view tags
-$panetags= array(); 
+$panetags = array();
 if ($id_view) {
-	foreach($page->find_tags($viewtemplate) as $tag) {
-		if (substr($tag,0,6)=="Pane::") $panetags[]= substr($tag,6);
-	}
+    foreach ($page->find_tags($viewtemplate) as $tag) {
+        if (substr($tag, 0, 6) == "Pane::")
+            $panetags[] = substr($tag, 6);
+    }
 }
 
 
 
-			
+
 //db fix
-if ($do=='fixdb') {
-	$blackbox->check_dbase(true);
-	$backto= "setup.php";
-		
-	//Display page
-	$page->tags['PageTitle'] =  'Setup';
-	$page->tags['Body']=	 "
+if ($do == 'fixdb') {
+    $blackbox->check_dbase(true);
+    $backto = "setup.php";
+
+    //Display page
+    $page->tags['PageTitle'] = 'Setup';
+    $page->tags['Body'] = "
 		<h2>Database setup</h2>
 		<p>All good.</p>
 		<div class='buttons'>
 			<input type='button' value='Close'  onClick=\"document.location.href='$backto';\"  />
 		</div>
 	";
-	$page->render();
+    $page->render();
 }
 
 //db check
-if ($do=='checkdb') {
-	$errors= $blackbox->check_dbase();
-	if ($errors) {
-		$errors= implode("<br/>",$errors);
-		$fwdto= "setup.php?do=fixdb";
-		$bodyinsert="
+if ($do == 'checkdb') {
+    $errors = $blackbox->check_dbase();
+    if ($errors) {
+        $errors = implode("<br/>", $errors);
+        $fwdto = "setup.php?do=fixdb";
+        $bodyinsert = "
 			<p>Your database needs to be setup to work with new blackbox modules.</p>
 			<div style='margin:10px 0; background:#ddd;'>
 				<p>$errors</p>
@@ -186,21 +183,20 @@ if ($do=='checkdb') {
 				<input type='button' value='Proceed'  onClick=\"document.location.href='$fwdto';\"  />
 			</div>
 		";
-	}
-	else {
-		$backto= "setup.php";
-		$bodyinsert="
+    } else {
+        $backto = "setup.php";
+        $bodyinsert = "
 			<p>Database check shows that all module tables are OK.</p>
 			<div class='buttons left'>
 				<input type='button' value='Close'  onClick=\"document.location.href='$backto';\"  />
 			</div>
 		";
-	}
-	
-	//Display page
-	$page->tags['PageTitle'] =  'Setup';
-	$page->tags['Body']=	 $bodyinsert;
-	$page->render();
+    }
+
+    //Display page
+    $page->tags['PageTitle'] = 'Setup';
+    $page->tags['Body'] = $bodyinsert;
+    $page->render();
 }
 
 
@@ -209,26 +205,28 @@ if ($do=='checkdb') {
 ###
 ###############################################
 
-if ($do=='delelement2') {
-	
-	if (!$id_element) die('Invalid id '.__LINE__);
-	$query= "delete from blackboxelements where id_element= ':id_element' ";	
-	$params= array('id_element'=>$id_element);
-	$db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-	$id_element=0;
-	$do='config';
+if ($do == 'delelement2') {
+
+    if (!$id_element)
+        die('Invalid id ' . __LINE__);
+    $query = "delete from blackboxelements where id_element= ':id_element' ";
+    $params = array('id_element' => $id_element);
+    $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+    $id_element = 0;
+    $do = 'config';
 }
 
-if ($do=='delelement') {
+if ($do == 'delelement') {
 
-	if (!$id_element) die('Invalid id '.__LINE__);
-	
-	$doins='delelement2';
-	$backto='setup.php?do=config&id_view=$id_view';
-	
-	//Display page
-	$page->tags['PageTitle']=  'Setup';
-	$page->tags['Body']=	"
+    if (!$id_element)
+        die('Invalid id ' . __LINE__);
+
+    $doins = 'delelement2';
+    $backto = 'setup.php?do=config&id_view=$id_view';
+
+    //Display page
+    $page->tags['PageTitle'] = 'Setup';
+    $page->tags['Body'] = "
 		<form action='setup.php' method='post'>
 			<fieldset>
 				<legend>Confirm deletion</legend>
@@ -244,7 +242,7 @@ if ($do=='delelement') {
 			</fieldset>
 		</form>
 	";
-	$page->render();
+    $page->render();
 }
 
 
@@ -253,60 +251,66 @@ if ($do=='delelement') {
 ###
 ###############################################
 
-if ($do=='editdatapt2') {
+if ($do == 'editdatapt2') {
 
-	if (!$id_view) die('Invalid id '.__LINE__);
+    if (!$id_view)
+        die('Invalid id ' . __LINE__);
 
-	//clean and val
-	if (!$datapt)     $form->errors['datapt']= "field empty";
-	if (!$style)      $form->errors['style']=  "field empty";
-	if (!$panetag)    $form->errors['panetag']="field empty";
-	if ($resolution) $resolution= (int)$resolution;
-	
-	//if valid proceed
-	if ($form->errors) $do='editdatapt';
-	else {
-	
-		//insert if new
-		if (!isgoodid($id_element)) {
-			$query= "
+    //clean and val
+    if (!$datapt)
+        $form->errors['datapt'] = "field empty";
+    if (!$style)
+        $form->errors['style'] = "field empty";
+    if (!$panetag)
+        $form->errors['panetag'] = "field empty";
+    if ($resolution)
+        $resolution = (int) $resolution;
+
+    //if valid proceed
+    if ($form->errors)
+        $do = 'editdatapt';
+    else {
+
+        //insert if new
+        if (!isgoodid($id_element)) {
+            $query = "
 				insert into blackboxelements set
 				type= 'd',
 				id_view= ':id_view'
-			";	
-		$params= array('id_view'=> $id_view,);
-			$db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-			$id_element= $db->insert_id();
-		}
-	
-		//pack settings
-		$settings= array(); 
-		list($mod,$dp)= explode('::',$datapt);
-		$settings['module']=    $mod;
-		$settings['datapoint']= $dp;
-		$settings['resolution']= $resolution;
-		$settings['style']=     $style;
+			";
+            $params = array('id_view' => $id_view,);
+            $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+            $id_element = $db->insert_id();
+        }
 
-		//write 
-		$query= "
+        //pack settings
+        $settings = array();
+        list($mod, $dp) = explode('::', $datapt);
+        $settings['module'] = $mod;
+        $settings['datapoint'] = $dp;
+        $settings['resolution'] = $resolution;
+        $settings['style'] = $style;
+
+        //write 
+        $query = "
 			update blackboxelements set
 			name=     ':name',
 			settings= ':settings',
 			panetag=  ':panetag',
 			position= ':position'
 			where id_element= ':id_element'
-		";	
-		$params= array(
-			'name'=>       $name,
-			'settings'=>   serialize($settings),
-			'panetag'=>    $panetag,
-			'position'=>   $position,
-			'id_element'=> $id_element,
-		);
-		$db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-		
-		$do='config';
-	}
+		";
+        $params = array(
+            'name' => $name,
+            'settings' => serialize($settings),
+            'panetag' => $panetag,
+            'position' => $position,
+            'id_element' => $id_element,
+        );
+        $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+
+        $do = 'config';
+    }
 }
 
 
@@ -315,90 +319,91 @@ if ($do=='editdatapt2') {
 ###
 ###############################################
 
-if ($do=='editdatapt') {
+if ($do == 'editdatapt') {
 
-	if (!$id_view) die('Invalid id '.__LINE__);
+    if (!$id_view)
+        die('Invalid id ' . __LINE__);
 
-	//preload form
-	if ($form->errors) {}
-	elseif (isgoodid($id_element)) {
-		$query= "select * from blackboxelements where id_element=':id_element' ";	
-		$params= array('id_element'=>$id_element);
-		$result= $db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-		if ($row= $db->fetch_row($result)) {
-			$name=      $row['name'];
-			$settings=  $row['settings'];
-			$panetag=   $row['panetag'];
-			$position=  $row['position'];
-			
-			$settings= unserialize($settings);
-			$datapt=     $settings['module'].'::'.$settings['datapoint'];
-			$resolution= $settings['resolution'];
-			$style=      $settings['style'];
-		}
-		else die('Invalid id '.__LINE__);
-	}
-	else {
-		$name=      '';
-		$panetag=   '';
-		$style=     '';
-		$position=   0;
-		$resolution= '';
-	}
+    //preload form
+    if ($form->errors) {
+        
+    } elseif (isgoodid($id_element)) {
+        $query = "select * from blackboxelements where id_element=':id_element' ";
+        $params = array('id_element' => $id_element);
+        $result = $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+        if ($row = $db->fetch_row($result)) {
+            $name = $row['name'];
+            $settings = $row['settings'];
+            $panetag = $row['panetag'];
+            $position = $row['position'];
 
-	//make datapt select
-	//roll all together for now, cascade select later
-	//maybe heading/seperator type elements as well
-	$options= array();
-	foreach ($modules	as $mod=> $module) {
-		foreach ($module->datapoints as $dp=> $datapoint) {
-			$label= "$mod::$dp";
-			$options[$label]= array('value'=>"$module->name - $datapoint->name");
-		}
-	}
-	$select= array(
-		'name'=>     'datapt',
-		'selected'=> $datapt,
-		'options'=>  $options,
-		'emptyoption'=>  '--',
-		'class'=> '',
-	);
-	$datapt_select= $form->makeselect($select);
+            $settings = unserialize($settings);
+            $datapt = $settings['module'] . '::' . $settings['datapoint'];
+            $resolution = $settings['resolution'];
+            $style = $settings['style'];
+        } else
+            die('Invalid id ' . __LINE__);
+    } else {
+        $name = '';
+        $panetag = '';
+        $style = '';
+        $position = 0;
+        $resolution = '';
+    }
 
-	//make pane select
-	$options= array();
-	foreach ($panetags as $label) {
-		$options[$label]= array('value'=>$label);
-	}	
-	$select= array(
-		'name'=>     'panetag',
-		'selected'=> $panetag,
-		'options'=>  $options,
-		'emptyoption'=>  '--',
-		'class'=> '',
-	);
-	$panetag_select= $form->makeselect($select);
-		
-	//make style select
-	$options= array();
-	foreach ($styles as $label) {
-		$options[$label]= array('value'=>$label);
-	}	
-	$select= array(
-		'name'=>     'style',
-		'selected'=> $style,
-		'options'=>  $options,
-		'emptyoption'=>  '--',
-		'class'=> '',
-	);
-	$style_select= $form->makeselect($select);
+    //make datapt select
+    //roll all together for now, cascade select later
+    //maybe heading/seperator type elements as well
+    $options = array();
+    foreach ($modules as $mod => $module) {
+        foreach ($module->datapoints as $dp => $datapoint) {
+            $label = "$mod::$dp";
+            $options[$label] = array('value' => "$module->name - $datapoint->name");
+        }
+    }
+    $select = array(
+        'name' => 'datapt',
+        'selected' => $datapt,
+        'options' => $options,
+        'emptyoption' => '--',
+        'class' => '',
+    );
+    $datapt_select = $form->makeselect($select);
 
-	//prep
-	$do=     'editdatapt2';
-	$backto= "setup.php?do=config&amp;id_view=$id_view";
-	
-	//assemble form
-	$bodyinsert="
+    //make pane select
+    $options = array();
+    foreach ($panetags as $label) {
+        $options[$label] = array('value' => $label);
+    }
+    $select = array(
+        'name' => 'panetag',
+        'selected' => $panetag,
+        'options' => $options,
+        'emptyoption' => '--',
+        'class' => '',
+    );
+    $panetag_select = $form->makeselect($select);
+
+    //make style select
+    $options = array();
+    foreach ($styles as $label) {
+        $options[$label] = array('value' => $label);
+    }
+    $select = array(
+        'name' => 'style',
+        'selected' => $style,
+        'options' => $options,
+        'emptyoption' => '--',
+        'class' => '',
+    );
+    $style_select = $form->makeselect($select);
+
+    //prep
+    $do = 'editdatapt2';
+    $backto = "setup.php?do=config&amp;id_view=$id_view";
+
+    //assemble form
+    $bodyinsert = "
 		<form action='setup.php' method='post'>
 			<fieldset>
 				<legend>Edit datapt element</legend>
@@ -443,10 +448,10 @@ if ($do=='editdatapt') {
 		</form>
 	";
 
-	//Display page
-	$page->tags['PageTitle'] =  'Setup';
-	$page->tags['Body']=	 $bodyinsert;
-	$page->render();
+    //Display page
+    $page->tags['PageTitle'] = 'Setup';
+    $page->tags['Body'] = $bodyinsert;
+    $page->render();
 }
 
 
@@ -455,65 +460,74 @@ if ($do=='editdatapt') {
 ###
 ###############################################
 
-if ($do=='editseries2' or $do=='delseries') {
+if ($do == 'editseries2' or $do == 'delseries') {
 
-	if (!$id_view)    die('Invalid id '.__LINE__);
-	if (!$id_element) die('Invalid id '.__LINE__);
-	if ($do=='delseries' and !isgoodid($series))  die('Invalid id '.__LINE__);
-	
-	//clean and val
-	if ($do=='editseries2'){
-		if (!$datapt)     $form->errors['datapt']= "field empty";
-		if (!$name)       $form->errors['name']=  "field empty";
-		if (!$linecolor)  $form->errors['linecolor']=  "field empty";
-		if (!$multiplier) $form->errors['multiplier']=  "field empty";
-	}
-	
-	//if valid proceed
-	if ($form->errors) $do='editseries';
-	else {
-	
-		//get
-		$query= "select * from blackboxelements where id_element=':id_element' ";	
-		$params= array('id_element'=>$id_element);
-		$result= $db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-		if ($row= $db->fetch_row($result)) {
-			$settings=  $row['settings'];
-			$settings= unserialize($settings);
-		}
-		else die('Invalid id '.__LINE__);
-		
-		//add new series
-		if (!$series) {
-			$series= isset($settings['datapts']) ? (count($settings['datapts'])+1) : 1;
-			if (!isset($settings['datapts'])) $settings['datapts']=array();
-		}
-		
-		//merge in settings
-		if ($do=='editseries2'){
-			list($mod,$dp)= explode('::',$datapt);
-			$settings['datapts'][$series]['module']=    $mod;
-			$settings['datapts'][$series]['datapoint']= $dp;
-			$settings['datapts'][$series]['linecolor']= $linecolor;
-			$settings['datapts'][$series]['multiplier']= round($multiplier,2);
-			$settings['datapts'][$series]['name']=      $name;
-		}
-		else 	unset($settings['datapts'][$series]);
+    if (!$id_view)
+        die('Invalid id ' . __LINE__);
+    if (!$id_element)
+        die('Invalid id ' . __LINE__);
+    if ($do == 'delseries' and ! isgoodid($series))
+        die('Invalid id ' . __LINE__);
 
-		//write back
-		$query= "
+    //clean and val
+    if ($do == 'editseries2') {
+        if (!$datapt)
+            $form->errors['datapt'] = "field empty";
+        if (!$name)
+            $form->errors['name'] = "field empty";
+        if (!$linecolor)
+            $form->errors['linecolor'] = "field empty";
+        if (!$multiplier)
+            $form->errors['multiplier'] = "field empty";
+    }
+
+    //if valid proceed
+    if ($form->errors)
+        $do = 'editseries';
+    else {
+
+        //get
+        $query = "select * from blackboxelements where id_element=':id_element' ";
+        $params = array('id_element' => $id_element);
+        $result = $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+        if ($row = $db->fetch_row($result)) {
+            $settings = $row['settings'];
+            $settings = unserialize($settings);
+        } else
+            die('Invalid id ' . __LINE__);
+
+        //add new series
+        if (!$series) {
+            $series = isset($settings['datapts']) ? (count($settings['datapts']) + 1) : 1;
+            if (!isset($settings['datapts']))
+                $settings['datapts'] = array();
+        }
+
+        //merge in settings
+        if ($do == 'editseries2') {
+            list($mod, $dp) = explode('::', $datapt);
+            $settings['datapts'][$series]['module'] = $mod;
+            $settings['datapts'][$series]['datapoint'] = $dp;
+            $settings['datapts'][$series]['linecolor'] = $linecolor;
+            $settings['datapts'][$series]['multiplier'] = round($multiplier, 2);
+            $settings['datapts'][$series]['name'] = $name;
+        } else
+            unset($settings['datapts'][$series]);
+
+        //write back
+        $query = "
 			update blackboxelements set
 			settings= ':settings'
 			where id_element= ':id_element'
-		";	
-		$params= array(
-			'settings'=>   serialize($settings),
-			'id_element'=> $id_element,
-		);
-		$db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-		
-		$do='graph';
-	}
+		";
+        $params = array(
+            'settings' => serialize($settings),
+            'id_element' => $id_element,
+        );
+        $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+
+        $do = 'graph';
+    }
 }
 
 
@@ -522,59 +536,61 @@ if ($do=='editseries2' or $do=='delseries') {
 ###
 ###############################################
 
-if ($do=='editseries') {
+if ($do == 'editseries') {
 
-	if (!$id_view)    die('Invalid id '.__LINE__);
-	if (!$id_element) die('Invalid id '.__LINE__);
-	
-	//preload form
-	if ($form->errors) {}
-	elseif (isgoodid($series)) {
-		$query= "select * from blackboxelements where id_element=':id_element' ";	
-		$params= array('id_element'=>$id_element);
-		$result= $db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-		if ($row= $db->fetch_row($result)) {
-			$settings=  $row['settings'];
-			$settings= unserialize($settings);
-			$datapt=     $settings['datapts'][$series]['module'].'::'.$settings['datapts'][$series]['datapoint'];
-			$name=       $settings['datapts'][$series]['name'];
-			$linecolor=  $settings['datapts'][$series]['linecolor'];
-			$multiplier=  $settings['datapts'][$series]['multiplier'];
-		}
-		else die('Invalid id '.__LINE__);
-	}
-	else {
-		$datapt=    '';
-		$linecolor= '';
-		$multiplier= 1;
-		$name= '';
-	}
+    if (!$id_view)
+        die('Invalid id ' . __LINE__);
+    if (!$id_element)
+        die('Invalid id ' . __LINE__);
 
-	//make datapt select
-	//roll all together for now, cascade select later
-	//maybe heading/seperator type elements as well
-	$options= array();
-	foreach ($modules	as $mod=> $module) {
-		foreach ($module->datapoints as $dp=> $datapoint) {
-			$label= "$mod::$dp";
-			$options[$label]= array('value'=>"$module->name - $datapoint->name");
-		}
-	}
-	$select= array(
-		'name'=>     'datapt',
-		'selected'=> $datapt,
-		'options'=>  $options,
-		'emptyoption'=>  '--',
-		'class'=> '',
-	);
-	$datapt_select= $form->makeselect($select);
+    //preload form
+    if ($form->errors) {
+        
+    } elseif (isgoodid($series)) {
+        $query = "select * from blackboxelements where id_element=':id_element' ";
+        $params = array('id_element' => $id_element);
+        $result = $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+        if ($row = $db->fetch_row($result)) {
+            $settings = $row['settings'];
+            $settings = unserialize($settings);
+            $datapt = $settings['datapts'][$series]['module'] . '::' . $settings['datapts'][$series]['datapoint'];
+            $name = $settings['datapts'][$series]['name'];
+            $linecolor = $settings['datapts'][$series]['linecolor'];
+            $multiplier = $settings['datapts'][$series]['multiplier'];
+        } else
+            die('Invalid id ' . __LINE__);
+    } else {
+        $datapt = '';
+        $linecolor = '';
+        $multiplier = 1;
+        $name = '';
+    }
 
-	//prep
-	$do=     'editseries2';
-	$backto= "setup.php?do=graph&amp;id_element=$id_element";
-	
-	//assemble form
-	$bodyinsert="
+    //make datapt select
+    //roll all together for now, cascade select later
+    //maybe heading/seperator type elements as well
+    $options = array();
+    foreach ($modules as $mod => $module) {
+        foreach ($module->datapoints as $dp => $datapoint) {
+            $label = "$mod::$dp";
+            $options[$label] = array('value' => "$module->name - $datapoint->name");
+        }
+    }
+    $select = array(
+        'name' => 'datapt',
+        'selected' => $datapt,
+        'options' => $options,
+        'emptyoption' => '--',
+        'class' => '',
+    );
+    $datapt_select = $form->makeselect($select);
+
+    //prep
+    $do = 'editseries2';
+    $backto = "setup.php?do=graph&amp;id_element=$id_element";
+
+    //assemble form
+    $bodyinsert = "
 		<form action='setup.php' method='post'>
 			<fieldset>
 				<legend>Edit graph series</legend>
@@ -609,10 +625,10 @@ if ($do=='editseries') {
 		</form>
 	";
 
-	//Display page
-	$page->tags['PageTitle'] =  'Setup';
-	$page->tags['Body']=	 $bodyinsert;
-	$page->render();
+    //Display page
+    $page->tags['PageTitle'] = 'Setup';
+    $page->tags['Body'] = $bodyinsert;
+    $page->render();
 }
 
 
@@ -621,87 +637,96 @@ if ($do=='editseries') {
 ###
 ###############################################
 
-if ($do=='editgraph2') {
+if ($do == 'editgraph2') {
 
-	if (!$id_view) die('Invalid id '.__LINE__);
+    if (!$id_view)
+        die('Invalid id ' . __LINE__);
 
-	//clean
-	$width=      (int)$width;
-	$height=     (int)$height;
-	$ymax=       (int)$ymax;
-	$ymin=       (int)$ymin;
-	$average=    (int)$average;
-	$linethick=  (int)$linethick;
-	$linesmooth= (int)(bool)$linesmooth;
-	$position=   (int)$position;
-	
-	//validate
-	if (!$name)       $form->errors['name']=   "field empty";
-	if (!$panetag)    $form->errors['panetag']= "field empty";
-	
-	if ($width <100 or $width >1000)  $form->errors['width']=     "must be 100-1000";
-	if ($height<100 or $height>1000)  $form->errors['height']=    "must be 100-1000";
-	if (!$width)      $form->errors['width']=     "field empty";
-	if (!$height)     $form->errors['height']=     "field empty";
+    //clean
+    $width = (int) $width;
+    $height = (int) $height;
+    $ymax = (int) $ymax;
+    $ymin = (int) $ymin;
+    $average = (int) $average;
+    $linethick = (int) $linethick;
+    $linesmooth = (int) (bool) $linesmooth;
+    $position = (int) $position;
 
-	if ($linethick>20) $form->errors['linethick']=     "must be 1-20";
-	if (!$linethick)   $form->errors['linethick']=     "field empty";
+    //validate
+    if (!$name)
+        $form->errors['name'] = "field empty";
+    if (!$panetag)
+        $form->errors['panetag'] = "field empty";
 
-	
-	//if valid proceed
-	if ($form->errors) $do='editgraph';
-	else {
-	
-		//insert if new
-		if (!isgoodid($id_element)) {
-			$query= "
+    if ($width < 100 or $width > 1000)
+        $form->errors['width'] = "must be 100-1000";
+    if ($height < 100 or $height > 1000)
+        $form->errors['height'] = "must be 100-1000";
+    if (!$width)
+        $form->errors['width'] = "field empty";
+    if (!$height)
+        $form->errors['height'] = "field empty";
+
+    if ($linethick > 20)
+        $form->errors['linethick'] = "must be 1-20";
+    if (!$linethick)
+        $form->errors['linethick'] = "field empty";
+
+
+    //if valid proceed
+    if ($form->errors)
+        $do = 'editgraph';
+    else {
+
+        //insert if new
+        if (!isgoodid($id_element)) {
+            $query = "
 				insert into blackboxelements set
 				id_view= ':id_view',
 				type='g'
-			";	
-			$params= array('id_view'=>$id_view);
-			$db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-			$id_element= $db->insert_id();
-			$settings= array(); 
-		}
-		else {
-			$query= "select * from blackboxelements where id_element=':id_element' ";	
-			$params= array('id_element'=>$id_element);
-			$result= $db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-			$row= $db->fetch_row($result) or die('Invalid id '.__LINE__);
-			$settings=  $row['settings'];
-			$settings= unserialize($settings);
-		}
-	
-		//merge settings
-		$settings['width']=  $width;
-		$settings['height']= $height;
-		$settings['ymax']=    $ymax;
-		$settings['ymin']=    $ymin;
-		$settings['average']= $average;
-		$settings['linethick']=  $linethick;
-		$settings['linesmooth']= $linesmooth;
+			";
+            $params = array('id_view' => $id_view);
+            $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+            $id_element = $db->insert_id();
+            $settings = array();
+        } else {
+            $query = "select * from blackboxelements where id_element=':id_element' ";
+            $params = array('id_element' => $id_element);
+            $result = $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+            $row = $db->fetch_row($result) or die('Invalid id ' . __LINE__);
+            $settings = $row['settings'];
+            $settings = unserialize($settings);
+        }
 
-		//write 
-		$query= "
+        //merge settings
+        $settings['width'] = $width;
+        $settings['height'] = $height;
+        $settings['ymax'] = $ymax;
+        $settings['ymin'] = $ymin;
+        $settings['average'] = $average;
+        $settings['linethick'] = $linethick;
+        $settings['linesmooth'] = $linesmooth;
+
+        //write 
+        $query = "
 			update blackboxelements set
 			name=     ':name',
 			settings= ':settings',
 			panetag=  ':panetag',
 			position= ':position'
 			where id_element= ':id_element'
-		";	
-		$params= array(
-			'name'=>       $name,
-			'settings'=>   serialize($settings),
-			'panetag'=>    $panetag,
-			'position'=>   $position,
-			'id_element'=> $id_element,
-		);
-		$db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-		
-		$do='graph';
-	}
+		";
+        $params = array(
+            'name' => $name,
+            'settings' => serialize($settings),
+            'panetag' => $panetag,
+            'position' => $position,
+            'id_element' => $id_element,
+        );
+        $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+
+        $do = 'graph';
+    }
 }
 
 
@@ -710,67 +735,68 @@ if ($do=='editgraph2') {
 ###
 ###############################################
 
-if ($do=='editgraph') {
+if ($do == 'editgraph') {
 
-	if (!$id_view) die('Invalid id '.__LINE__);
+    if (!$id_view)
+        die('Invalid id ' . __LINE__);
 
-	//preload form
-	if ($form->errors) {}
-	elseif ($id_element) {
-		$query= "select * from blackboxelements where id_element=':id_element' ";	
-		$params= array('id_element'=>$id_element);
-		$result= $db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-		if ($row= $db->fetch_row($result)) {
-			$name=      $row['name'];
-			$settings=  $row['settings'];
-			$panetag=   $row['panetag'];
-			$position=  $row['position'];
-			
-			$settings= unserialize($settings);
-			$width=      $settings['width'];
-			$height=     $settings['height'];
-			$ymax=       $settings['ymax'];
-			$ymin=       $settings['ymin'];
-			$average=    $settings['average'];
-			$linethick=  $settings['linethick'];
-			$linesmooth= $settings['linesmooth'];
-		}
-		else die('Invalid id '.__LINE__);
-	}
-	else {
-		$name=      '';
-		$panetag=   '';
-		$width=   680;
-		$height=  230;
-		$ymax= '';
-		$ymin= 0;
-		$average= 1;
-		$linethick= 2;
-		$linesmooth= 1;
-	}
+    //preload form
+    if ($form->errors) {
+        
+    } elseif ($id_element) {
+        $query = "select * from blackboxelements where id_element=':id_element' ";
+        $params = array('id_element' => $id_element);
+        $result = $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+        if ($row = $db->fetch_row($result)) {
+            $name = $row['name'];
+            $settings = $row['settings'];
+            $panetag = $row['panetag'];
+            $position = $row['position'];
 
-	//make pane select
-	$options= array();
-	foreach ($panetags as $label) {
-		$options[$label]= array('value'=>$label);
-	}	
-	$select= array(
-		'name'=>     'panetag',
-		'selected'=> $panetag,
-		'options'=>  $options,
-		'emptyoption'=>  '--',
-		'class'=> '',
-	);
-	$panetag_select= $form->makeselect($select);
-	
-	$chk_linesmooth = $linesmooth ? " checked='checked'" : '';
-	
-	//prep
-	$do=     'editgraph2';
-	$backto= $id_element ? "setup.php?do=graph&amp;id_element=$id_element" : "setup.php?do=config&amp;id_view=$id_view";
-	
-	//assemble form
-	$bodyinsert="
+            $settings = unserialize($settings);
+            $width = $settings['width'];
+            $height = $settings['height'];
+            $ymax = $settings['ymax'];
+            $ymin = $settings['ymin'];
+            $average = $settings['average'];
+            $linethick = $settings['linethick'];
+            $linesmooth = $settings['linesmooth'];
+        } else
+            die('Invalid id ' . __LINE__);
+    } else {
+        $name = '';
+        $panetag = '';
+        $width = 680;
+        $height = 230;
+        $ymax = '';
+        $ymin = 0;
+        $average = 1;
+        $linethick = 2;
+        $linesmooth = 1;
+    }
+
+    //make pane select
+    $options = array();
+    foreach ($panetags as $label) {
+        $options[$label] = array('value' => $label);
+    }
+    $select = array(
+        'name' => 'panetag',
+        'selected' => $panetag,
+        'options' => $options,
+        'emptyoption' => '--',
+        'class' => '',
+    );
+    $panetag_select = $form->makeselect($select);
+
+    $chk_linesmooth = $linesmooth ? " checked='checked'" : '';
+
+    //prep
+    $do = 'editgraph2';
+    $backto = $id_element ? "setup.php?do=graph&amp;id_element=$id_element" : "setup.php?do=config&amp;id_view=$id_view";
+
+    //assemble form
+    $bodyinsert = "
 		<form action='setup.php' method='post'>
 			<fieldset>
 				<legend>Edit graph element</legend>
@@ -835,10 +861,10 @@ if ($do=='editgraph') {
 		</form>
 	";
 
-	//Display page
-	$page->tags['PageTitle'] =  'Setup';
-	$page->tags['Body']=	 $bodyinsert;
-	$page->render();
+    //Display page
+    $page->tags['PageTitle'] = 'Setup';
+    $page->tags['Body'] = $bodyinsert;
+    $page->render();
 }
 
 
@@ -847,44 +873,46 @@ if ($do=='editgraph') {
 ###
 ###############################################
 
-if ($do=='graph') {
+if ($do == 'graph') {
 
-	if (!$id_view)    die('Invalid id '.__LINE__);
-	if (!$id_element) die('Invalid id '.__LINE__);
+    if (!$id_view)
+        die('Invalid id ' . __LINE__);
+    if (!$id_element)
+        die('Invalid id ' . __LINE__);
 
-	//get element
-	$query= "
+    //get element
+    $query = "
 		select * from blackboxelements
 		where id_element=':id_element'
-	";	
-	$params= array('id_element'=>$id_element);
-	$result= $db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-	$series_insert='';
-	if ($row= $db->fetch_row($result)) {
-		$id_element=  $row['id_element'];
-		$name=        $row['name'];
-		$settings=    $row['settings'];
-		$settings= unserialize($settings);
-	}
-	else die('Invalid id '.__LINE__);
+	";
+    $params = array('id_element' => $id_element);
+    $result = $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+    $series_insert = '';
+    if ($row = $db->fetch_row($result)) {
+        $id_element = $row['id_element'];
+        $name = $row['name'];
+        $settings = $row['settings'];
+        $settings = unserialize($settings);
+    } else
+        die('Invalid id ' . __LINE__);
 
-	//graph
-	$name=       htmlfriendly($name);
-	$width=      htmlfriendly($settings['width']);
-	$height=     htmlfriendly($settings['height']);
-	$ymax=       htmlfriendly($settings['ymax']);
-	$ymin=       htmlfriendly($settings['ymin']);
-	$average=    htmlfriendly($settings['average']);
-	$linethick=  htmlfriendly($settings['linethick']);
-	$linesmooth= htmlfriendly($settings['linesmooth']);
-		
-	//and series
-	if (isset($settings['datapts'])){	
-		foreach ($settings['datapts'] as $series=> $s) {
-			$sname=      htmlfriendly($s['name']);
-			$linecolor= htmlfriendly($s['linecolor']);
-			$multiplier= htmlfriendly($s['multiplier']);
-			$series_insert.= "
+    //graph
+    $name = htmlfriendly($name);
+    $width = htmlfriendly($settings['width']);
+    $height = htmlfriendly($settings['height']);
+    $ymax = htmlfriendly($settings['ymax']);
+    $ymin = htmlfriendly($settings['ymin']);
+    $average = htmlfriendly($settings['average']);
+    $linethick = htmlfriendly($settings['linethick']);
+    $linesmooth = htmlfriendly($settings['linesmooth']);
+
+    //and series
+    if (isset($settings['datapts'])) {
+        foreach ($settings['datapts'] as $series => $s) {
+            $sname = htmlfriendly($s['name']);
+            $linecolor = htmlfriendly($s['linecolor']);
+            $multiplier = htmlfriendly($s['multiplier']);
+            $series_insert .= "
 				<tr>
 					<td>$series.</td>
 					<td>$sname</td>
@@ -896,14 +924,14 @@ if ($do=='graph') {
 					</td>
 				</tr>
 			";
-		}		
-	}
-	else $series_insert= 'None';
+        }
+    } else
+        $series_insert = 'None';
 
-	//build output
-	$backto= "setup.php?do=config&amp;id_view=$id_view";
-	
-	$output="
+    //build output
+    $backto = "setup.php?do=config&amp;id_view=$id_view";
+
+    $output = "
 		<h3 class='section'>Graph - <a href='setup.php?do=editgraph&amp;id_element=$id_element'>Edit</a> 
 					         <a href='setup.php?do=delelement&amp;id_element=$id_element'>Del</a>
 		</h3>
@@ -928,10 +956,10 @@ if ($do=='graph') {
 		</div>
 	";
 
-	//Display page
-	$page->tags['PageTitle'] = 'Setup';
-	$page->tags['Body'] =	   $output;
-	$page->render();
+    //Display page
+    $page->tags['PageTitle'] = 'Setup';
+    $page->tags['Body'] = $output;
+    $page->render();
 }
 
 
@@ -940,46 +968,50 @@ if ($do=='graph') {
 ###
 ###############################################
 
-if ($do=='editview2') {
+if ($do == 'editview2') {
 
-	$viewtemplate= basename($viewtemplate);
-	
-	//if valid proceed
-	if ($form->errors) $do='setup.php';
-	else {
-	
-		//insert if new
-		if (!isgoodid($id_view)) {
-			$query= "
+    $viewtemplate = basename($viewtemplate);
+
+    //if valid proceed
+    if ($form->errors)
+        $do = 'setup.php';
+    else {
+
+        //insert if new
+        if (!isgoodid($id_view)) {
+            $query = "
 				insert into blackboxviews set
 				template= ':template',
 				viewname= ':viewname',
                                 type= 'd',
 				position= (select coalesce(max(v.position),0)+1 from blackboxviews v)
-			";	
-			$params= array('template'=>$viewtemplate,'viewname'=>$viewname);
-			$db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-			$id_view= $db->insert_id();
-		}
-	}
+			";
+            $params = array('template' => $viewtemplate, 'viewname' => $viewname);
+            $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+            $id_view = $db->insert_id();
+        }
+    }
 }
 
-if ($do=='editview') {
+if ($do == 'editview') {
 
-	$doins='editview2';
-	$backto='setup.php';
+    $doins = 'editview2';
+    $backto = 'setup.php';
 
-	$template_options='';
-	foreach (scandir("templates") as $fname) {
-		if ($fname[0]==='.' or $fname[0]==='_') continue;
-		if (!preg_match("/\.html$/",$fname)) continue;
-		if ($fname=='template-setup.html') continue;
-		$template_options.="<option value='$fname'>$fname</option>\n";
-	}
-	
-	//Display page
-	$page->tags['PageTitle']=  'Setup';
-	$page->tags['Body']=	"
+    $template_options = '';
+    foreach (scandir("templates") as $fname) {
+        if ($fname[0] === '.' or $fname[0] === '_')
+            continue;
+        if (!preg_match("/\.html$/", $fname))
+            continue;
+        if ($fname == 'template-setup.html')
+            continue;
+        $template_options .= "<option value='$fname'>$fname</option>\n";
+    }
+
+    //Display page
+    $page->tags['PageTitle'] = 'Setup';
+    $page->tags['Body'] = "
 		<form action='setup.php' method='post'>
 			<fieldset>
 				<legend>Edit view</legend>
@@ -1004,7 +1036,7 @@ if ($do=='editview') {
 			</fieldset>
 		</form>
 	";
-	$page->render();
+    $page->render();
 }
 
 
@@ -1012,30 +1044,33 @@ if ($do=='editview') {
 ###
 ###############################################
 
-if ($do=='delview2') {
+if ($do == 'delview2') {
 
-	if (!$id_view) die('Invalid id '.__LINE__);
+    if (!$id_view)
+        die('Invalid id ' . __LINE__);
 
-	$query= "delete from blackboxviews where id_view=':id_view'	";	
-	$params= array('id_view'=>$id_view);
-	$db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-	$query= "delete from blackboxelements where id_view=':id_view'	";	
-	$params= array('id_view'=>$id_view);
-	$db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
+    $query = "delete from blackboxviews where id_view=':id_view'	";
+    $params = array('id_view' => $id_view);
+    $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+    $query = "delete from blackboxelements where id_view=':id_view'	";
+    $params = array('id_view' => $id_view);
+    $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
 
-	$id_view= 0; $do='';
+    $id_view = 0;
+    $do = '';
 }
 
-if ($do=='delview') {
+if ($do == 'delview') {
 
-	if (!$id_view) die('Invalid id '.__LINE__);
-	
-	$doins='delview2';
-	$backto='setup.php';
-	
-	//Display page
-	$page->tags['PageTitle']=  'Setup';
-	$page->tags['Body']=	"
+    if (!$id_view)
+        die('Invalid id ' . __LINE__);
+
+    $doins = 'delview2';
+    $backto = 'setup.php';
+
+    //Display page
+    $page->tags['PageTitle'] = 'Setup';
+    $page->tags['Body'] = "
 		<form action='setup.php' method='post'>
 			<fieldset>
 				<legend>Confirm deletion</legend>
@@ -1052,7 +1087,7 @@ if ($do=='delview') {
 			</fieldset>
 		</form>
 	";
-	$page->render();
+    $page->render();
 }
 
 
@@ -1060,32 +1095,34 @@ if ($do=='delview') {
 ###
 ###############################################
 
-if ($do=='config') {
+if ($do == 'config') {
 
-	if (!$id_view) die('Invalid id '.__LINE__);
-	
-	//get view elements
-	$panelines= array();
-	$query= "
+    if (!$id_view)
+        die('Invalid id ' . __LINE__);
+
+    //get view elements
+    $panelines = array();
+    $query = "
 		select * from blackboxelements
 		where id_view=':id_view'
 		order by panetag,position
-	";	
-	$params= array('id_view'=>$id_view);
-	$result= $db->query($query,$params) or codeerror('DB error',__FILE__,__LINE__);
-	while ($row= $db->fetch_row($result)) {
-		$id_element=  $row['id_element'];
-		$name=        $row['name'];
-		$panetag=     $row['panetag'];
-		$type=        $row['type'];
-		$settings=    $row['settings'];
+	";
+    $params = array('id_view' => $id_view);
+    $result = $db->query($query, $params) or codeerror('DB error', __FILE__, __LINE__);
+    while ($row = $db->fetch_row($result)) {
+        $id_element = $row['id_element'];
+        $name = $row['name'];
+        $panetag = $row['panetag'];
+        $type = $row['type'];
+        $settings = $row['settings'];
 
-		//hash lines per pane 
-		if (!isset($panelines[$panetag])) $panelines[$panetag]='';
+        //hash lines per pane 
+        if (!isset($panelines[$panetag]))
+            $panelines[$panetag] = '';
 
-		//datapts
-		if ($type=='d') {
-			$panelines[$panetag].= "
+        //datapts
+        if ($type == 'd') {
+            $panelines[$panetag] .= "
 				<div class='datapt'>
 					$name -
 					<span class='small'>
@@ -1094,43 +1131,44 @@ if ($do=='config') {
 					</span>
 				</div>
 			";
-		}
-		//graphs
-		else {
-			$settings= unserialize($settings);
-			$series_insert='';
-			if (isset($settings['datapts'])){	
-				foreach ($settings['datapts'] as $series=> $bla) {
-					$series_insert.= "&nbsp&nbsp;".$settings['datapts'][$series]['name']."<br/>\n";
-				}		
-			}
-			$panelines[$panetag].= "
+        }
+        //graphs
+        else {
+            $settings = unserialize($settings);
+            $series_insert = '';
+            if (isset($settings['datapts'])) {
+                foreach ($settings['datapts'] as $series => $bla) {
+                    $series_insert .= "&nbsp&nbsp;" . $settings['datapts'][$series]['name'] . "<br/>\n";
+                }
+            }
+            $panelines[$panetag] .= "
 				<div class='graph'>
 					$name - <a class='small' href='setup.php?do=graph&amp;id_element=$id_element'>Options</a>
 					<br/>
 					<span class='small'>$series_insert</span>
 				</div>
 			";
-		}
-	}
+        }
+    }
 
-	//build element columns by pane
-	$head=$tbody='';
-	foreach ($panetags as $panetag) {
-		if (!isset($panelines[$panetag])) continue; 
-		$lines= isset($panelines[$panetag]) ? $panelines[$panetag] : '';
-		$head.= "<th><h3>$panetag</h3></th>";
-		$tbody.="<td>$lines</td>";
-	}
+    //build element columns by pane
+    $head = $tbody = '';
+    foreach ($panetags as $panetag) {
+        if (!isset($panelines[$panetag]))
+            continue;
+        $lines = isset($panelines[$panetag]) ? $panelines[$panetag] : '';
+        $head .= "<th><h3>$panetag</h3></th>";
+        $tbody .= "<td>$lines</td>";
+    }
 
-	//Display page
-	$page->tags['PageTitle']=  'Setup';
-	$page->tags['LeftSidebar']=  "
+    //Display page
+    $page->tags['PageTitle'] = 'Setup';
+    $page->tags['LeftSidebar'] = "
 		<p style='font-style:italic;'>
 			Place datapoint and/or graph elements into the View template panes. 
 		</p>
 	";
-	$page->tags['Body']=	"
+    $page->tags['Body'] = "
 		<table style='clear:right;margin-bottom:15px' class='wtab'>
 			<tr>$head</tr>
 			<tr>$tbody</tr>
@@ -1138,8 +1176,7 @@ if ($do=='config') {
 		<input type='button' value='Add datapt' onClick=\"document.location.href='setup.php?do=editdatapt&amp;id_view=$id_view';\"  />
 		<input type='button' value='Add graph' onClick=\"document.location.href='setup.php?do=editgraph&amp;id_view=$id_view';\"  />
 	";
-	$page->render();
-
+    $page->render();
 }
 
 
@@ -1147,18 +1184,17 @@ if ($do=='config') {
 ###  VIEWS
 ###
 ###############################################
-
 //view listing
-$panelines= array();
-$query= "
+$panelines = array();
+$query = "
 	select * from blackboxviews
 	order by id_view
-";	
-$result= $db->query($query) or codeerror('DB error',__FILE__,__LINE__);
-$views_insert='';
-while ($row= $db->fetch_row($result)) {
-	$id_view=     $row['id_view'];
-	$views_insert.="
+";
+$result = $db->query($query) or codeerror('DB error', __FILE__, __LINE__);
+$views_insert = '';
+while ($row = $db->fetch_row($result)) {
+    $id_view = $row['id_view'];
+    $views_insert .= "
 		<div>
 			View $id_view - 
 			<a href='setup.php?do=config&amp;id_view=$id_view'>Config</a>
@@ -1168,20 +1204,20 @@ while ($row= $db->fetch_row($result)) {
 }
 
 //module listing
-$mods_insert='';
-foreach ($modules	as $mod=> $module) {
-	$ndps= count($module->datapoints);
-	$mods_insert.=	"<div>$module->name ($ndps dps)</div>"; 
+$mods_insert = '';
+foreach ($modules as $mod => $module) {
+    $ndps = count($module->datapoints);
+    $mods_insert .= "<div>$module->name ($ndps dps)</div>";
 }
 
 //display page
-$page->tags['PageTitle']=  'Setup';
-$page->tags['LeftSidebar']=  "
+$page->tags['PageTitle'] = 'Setup';
+$page->tags['LeftSidebar'] = "
 	<p style='font-style:italic;'>
 		A view is a status visualisation of module data. Add a view, or configure views to edit the view elements.  
 	</p>
 ";
-$page->tags['Body']=	"
+$page->tags['Body'] = "
 	<table style='width:100%' class='wtab'>
 		<tr>
 			<td style='width:50%'>
@@ -1196,6 +1232,4 @@ $page->tags['Body']=	"
 	</table>
 ";
 $page->render();
-
-
 ?>

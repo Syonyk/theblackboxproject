@@ -25,7 +25,7 @@ $SQL_PASS = 'secret';
 //this is the time interval in minutes that the device data is stored in the 
 //database
 //1-15 minutes is about right, minimum 1 minute
-$SETTINGS['sample_interval'] = 1; //minutes
+$SETTINGS['sample_interval'] = 1;
 
 //the code stores the current days data in a verbose form
 //set where you want the temp data files to be stored

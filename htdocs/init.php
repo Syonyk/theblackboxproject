@@ -1,6 +1,6 @@
 <?php
 
-/** 
+/**
  *  INIT.PHP
  *
  *  Holds code common to UI pages. 
@@ -11,9 +11,7 @@
  *  @license:  GPLv3. 
  *  @revision: $Rev$
  *
- **/ 
-
-
+ * */
 //php set
 ini_set('display_errors', 'on');
 error_reporting(E_ALL);
@@ -30,12 +28,10 @@ require('lib/lib-blackbox.php');
 
 //connect to db
 $db = new Database($SQL_TYPE);
-$db->connect($SQL_HOST, $SQL_USER, $SQL_PASS, $SQL_DB) or codeerror("DB connect failed",__FILE__,__LINE__);
+$db->connect($SQL_HOST, $SQL_USER, $SQL_PASS, $SQL_DB) or codeerror("DB connect failed", __FILE__, __LINE__);
 
 //sanity check sample interval
-$SETTINGS['sample_interval']= (int)$SETTINGS['sample_interval']>=1 ? (int)$SETTINGS['sample_interval']: 1;
+$SETTINGS['sample_interval'] = (int) $SETTINGS['sample_interval'] >= 1 ? (int) $SETTINGS['sample_interval'] : 1;
 
-$profiler= new Profiler;
-
-
+$profiler = new Profiler;
 ?>

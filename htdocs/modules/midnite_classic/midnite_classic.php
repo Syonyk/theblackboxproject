@@ -881,7 +881,8 @@ class midnite_classic extends Module {
             6 => 'Float~', //inaptly named 'float mmpt', ie failing to hold float voltage
             7 => 'EQ',
             18 => 'EQ~',
-            10 => 'HyperVoc'
+            10 => 'HyperVoc',
+            9 => 'OverVolt'
         );
         //map to linear charge states, ie still an integer but in order, duh!
         $state_map = array(
@@ -892,7 +893,8 @@ class midnite_classic extends Module {
             6 => 5, //float
             7 => 6, //eq
             18 => 6, //eq
-            10 => 7  //voc
+            10 => 7, //voc
+            9 => 8   // overvolt
         );
 
         //translate

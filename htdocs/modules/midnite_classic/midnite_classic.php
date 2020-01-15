@@ -200,7 +200,7 @@ class midnite_classic extends Module {
             'store' => true,
             'interval' => 'periodic',
             'method' => 'get_register',
-            'argument' => '[4132]/10',
+            'argument' => 'BITSET([4132],15) ? (65536-[4132])/-10 : [4132]/10',
             'comment' => '(decimal)',
             'unit' => '&deg;C',
             'priority' => 2,
